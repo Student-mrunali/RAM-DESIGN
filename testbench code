@@ -1,0 +1,73 @@
+module tb_sync_ram;
+
+
+    reg clk;
+    reg rst;
+    reg we;
+    reg [7:0] addr; 
+    reg [15:0] din; 
+    wire [15:0] dout;
+
+   
+    sync_ram #(
+        .ADDR_WIDTH(8),
+        .DATA_WIDTH(16)
+    ) uut (
+        .clk(clk),
+        .rst(rst),
+        .we(we),
+        .addr(addr),
+        .din(din),
+        .dout(dout)
+    );
+
+   
+    always begin
+        #5 clk = ~clk;
+    end
+
+   
+    initial begin
+       
+        clk = 0;
+        rst = 0;
+        we = 0;
+        addr = 8'b00000000;
+        din = 16'b0;
+
+      
+        $display("Test Start: Applying Reset");
+        rst = 1;
+        #10; // Wait for a clock cycle
+        rst = 0;
+        
+      
+        $display("Writing 0x1234 to address 0");
+        addr = 8'b00000000;
+        din = 16'h1234;
+        we = 1;
+        #10; 
+        
+        $display("Reading data from address 0");
+        we = 0;
+        #10;
+        $display("Read Data: %h", dout);
+
+       
+        $display("Writing 0x5678 to address 1");
+        addr = 8'b00000001;
+        din = 16'h5678;
+        we = 1;
+        #10; // Wait for one clock cycle
+
+       
+        $display("Reading data from address 1");
+        we = 0;
+        #10;
+        $display("Read Data: %h", dout);
+        
+       
+        $finish;
+    end
+
+endmodule
