@@ -1,0 +1,29 @@
+module sync_ram #(
+    parameter ADDR_WIDTH = 8,  // Address width (e.g., 8-bit addressable memory)
+    parameter DATA_WIDTH = 16  // Data width (e.g., 16-bit data bus)
+)(
+    input clk,                // Clock signal
+    input rst,                // Reset signal
+    input we,                 // Write enable signal (1 for write, 0 for read)
+    input [ADDR_WIDTH-1:0] addr,  // Address input
+    input [DATA_WIDTH-1:0] din,   // Data input (for write operation)
+    output reg [DATA_WIDTH-1:0] dout // Data output (for read operation)
+);
+
+    // Define the RAM memory array
+    reg [DATA_WIDTH-1:0] ram [(2**ADDR_WIDTH)-1:0];
+
+    // Asynchronous reset and clocked write/read operations
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            dout <= 0;  // Clear the output on reset
+        end else if (we) begin
+            // Write data to the RAM
+            ram[addr] <= din;
+        end else begin
+            // Read data from the RAM
+            dout <= ram[addr];
+        end
+    end
+
+endmodule
